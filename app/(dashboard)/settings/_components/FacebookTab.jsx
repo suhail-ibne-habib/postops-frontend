@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@clerk/nextjs";
-import { Save, ExternalLink } from "lucide-react";
+import { Save, ExternalLink, Globe, CheckCircle2 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -45,18 +45,25 @@ export function FacebookTab() {
     setSaving(true);
     setMessage({ type: "", text: "" });
     try {
-      await apiFetch(
+      const res = await apiFetch(
         "/facebook-setting",
         {
           method: "POST",
           body: JSON.stringify({
-            name: form.name,
             accessToken: form.accessToken,
           }),
         },
         getToken
       );
-      setMessage({ type: "success", text: "Facebook settings saved successfully!" });
+      if (res.data) {
+        setForm({
+          name: res.data.name || "",
+          accessToken: res.data.accessToken || "",
+        });
+        setMessage({ type: "success", text: `Facebook settings saved! Connected to: ${res.data.name}` });
+      } else {
+        setMessage({ type: "success", text: "Facebook settings saved successfully!" });
+      }
     } catch (err) {
       setMessage({ type: "error", text: err.message });
     } finally {
@@ -100,16 +107,24 @@ export function FacebookTab() {
       </div>
 
       <div className="space-y-4">
-        <div className="space-y-1.5">
-          <Label className="text-slate-300">Page Name</Label>
-          <Input
-            name="name"
-            value={form.name}
-            onChange={handleChange}
-            placeholder="e.g. My Business Page"
-            className="bg-[#0e131f] border-[#1f293d] text-slate-200 placeholder:text-slate-500/70 focus-visible:ring-1 focus-visible:ring-blue-600 focus-visible:border-blue-600"
-          />
-        </div>
+        {form.name && (
+          <div className="space-y-1.5">
+            <Label className="text-slate-300">Connected Page</Label>
+            <div className="flex items-center justify-between p-4 bg-[#151c2c] border border-blue-500/30 rounded-xl transition-all hover:border-blue-500/50">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-blue-600/20 flex items-center justify-center text-blue-500 shadow-inner">
+                  <Globe className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-slate-200">{form.name}</p>
+                  <p className="text-xs text-emerald-400 flex items-center gap-1 mt-0.5">
+                    <CheckCircle2 className="h-3 w-3" /> Active Connection
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="space-y-1.5">
           <Label className="text-slate-300">Page Access Token</Label>
@@ -139,7 +154,7 @@ export function FacebookTab() {
       <div className="pt-4 flex justify-end">
         <Button
           onClick={handleSave}
-          disabled={saving || !form.name || !form.accessToken}
+          disabled={saving || !form.accessToken}
           className="bg-blue-600 hover:bg-blue-500 text-white gap-2"
         >
           {saving ? (
