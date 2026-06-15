@@ -5,7 +5,6 @@ import { useAuth } from "@clerk/nextjs";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { MagicContextGenerator } from "./_components/MagicContextGenerator";
 import { BrandAssetsSection } from "./_components/BrandAssetsSection";
-import { SocialAccountsSection } from "./_components/SocialAccountsSection";
 import { InspirationsSection } from "./_components/InspirationsSection";
 import { UnsavedChangesBar } from "./_components/UnsavedChangesBar";
 import { apiFetch } from "@/lib/api";
@@ -17,7 +16,6 @@ const EMPTY_FORM = {
   logoUploaded: false,
   logoFileName: "",
   logoUrl: "",
-  facebookPage: "",
   extractedDescription: "",
   extractedTone: "",
   extractedAudience: "",
@@ -41,7 +39,6 @@ export default function BusinessSetupPage() {
 
   // Accordion open/close
   const [brandOpen, setBrandOpen] = useState(true);
-  const [socialOpen, setSocialOpen] = useState(true);
   const [inspOpen, setInspOpen] = useState(false);
 
   // ── Load business profile on mount ──────────────────────────────────────
@@ -57,7 +54,6 @@ export default function BusinessSetupPage() {
           logoUploaded: !!b.logo,
           logoFileName: b.logo ? b.logo.split("/").pop() : "",
           logoUrl: b.logo || "",
-          facebookPage: b.connectedFbPage || "",
           extractedDescription: b.businessDescription || "",
           extractedTone: b.brandVoice || "",
           extractedAudience: b.targetAudience || "",
@@ -198,7 +194,6 @@ export default function BusinessSetupPage() {
             businessContact: form.businessContact,
             brandVoice: form.extractedTone,
             targetAudience: form.extractedAudience,
-            connectedFbPage: form.facebookPage,
             designInspirations: designInspirationsUrls,
           }),
         },
@@ -296,13 +291,6 @@ export default function BusinessSetupPage() {
         </div>
       )}
 
-      {/* ── Social Accounts ──────────────────────────────────────────────── */}
-      <SocialAccountsSection
-        form={form}
-        handleChange={handleChange}
-        socialOpen={socialOpen}
-        setSocialOpen={setSocialOpen}
-      />
 
       {/* ── Magic Context Generator ──────────────────────────────────────── */}
       <MagicContextGenerator

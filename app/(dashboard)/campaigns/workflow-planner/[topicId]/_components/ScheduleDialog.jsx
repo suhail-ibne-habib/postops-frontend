@@ -39,7 +39,7 @@ export function ScheduleDialog({ open, onOpenChange, post, topicId }) {
     }
     setIsPublishing(true);
     try {
-      await apiFetch(
+      const res = await apiFetch(
         "/scheduled-posts",
         {
           method: "POST",
@@ -50,7 +50,14 @@ export function ScheduleDialog({ open, onOpenChange, post, topicId }) {
         },
         getToken
       );
-      alert("Post scheduled successfully!");
+
+      await apiFetch(
+        `/scheduled-posts/${res.data._id}/publish`,
+        { method: "POST" },
+        getToken
+      );
+
+      alert("Post published successfully!");
       onOpenChange(false);
     } catch (err) {
       console.error("Publish failed:", err);
@@ -109,13 +116,11 @@ export function ScheduleDialog({ open, onOpenChange, post, topicId }) {
 
         {/* Header */}
         <div className="p-4 border-b border-[#1f293d] flex items-center justify-between shrink-0">
-          <DialogTitle className="text-xl font-bold">Schedule post</DialogTitle>
+          <DialogTitle className="text-xl font-bold">Publish post</DialogTitle>
         </div>
 
         {/* Body */}
         <div className="flex flex-1 overflow-hidden min-w-0">
-          <AccountsSidebar />
-
           <div className="flex-1 flex flex-col bg-[#0b0f19] overflow-y-auto overflow-x-hidden min-w-0">
             <div className="p-4 md:p-6 flex-1 w-full max-w-4xl mx-auto">
               <div className="flex flex-col md:flex-row gap-5">

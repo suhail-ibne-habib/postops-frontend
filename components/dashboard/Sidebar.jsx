@@ -21,16 +21,14 @@ import { Separator } from "@/components/ui/separator";
 
 // All nav items defined once, shared by desktop and mobile drawers
 const PRIMARY_NAV = [
-  { href: "/dashboard",      label: "Dashboard",     icon: LayoutDashboard },
-  { href: "/campaigns",      label: "Campaigns",     icon: Megaphone },
-  { href: "/ai-editor",      label: "AI Editor",     icon: Sparkles },
-  { href: "/business-setup", label: "Business Setup",icon: Briefcase },
-  { href: "/analytics",      label: "Analytics",     icon: BarChart3 },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/campaigns", label: "Campaigns", icon: Megaphone },
+  { href: "/business-setup", label: "Business Setup", icon: Briefcase },
 ];
 
 const SECONDARY_NAV = [
   { href: "/settings", label: "Settings", icon: Settings },
-  { href: "/support",  label: "Support",  icon: HelpCircle },
+  { href: "/support", label: "Support", icon: HelpCircle },
 ];
 
 function BrandLogo() {

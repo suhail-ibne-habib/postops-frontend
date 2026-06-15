@@ -1,12 +1,13 @@
 "use client";
 
-import { Sun, User, Bell, Cpu } from "lucide-react";
+import { Sun, User, Bell, Cpu, Share2 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { AppearanceTab }    from "./_components/AppearanceTab";
 import { ProfileTab }       from "./_components/ProfileTab";
 import { AITab }            from "./_components/AITab";
 import { NotificationsTab } from "./_components/NotificationsTab";
+import { FacebookTab }      from "./_components/FacebookTab";
 
 // Tab definitions — add/remove a tab here and everything else follows
 const TABS = [
@@ -14,6 +15,7 @@ const TABS = [
   { value: "profile",       label: "Profile",          icon: User,     content: <ProfileTab /> },
   { value: "ai",            label: "AI Orchestration", icon: Cpu,      content: <AITab /> },
   { value: "notifications", label: "Notifications",    icon: Bell,     content: <NotificationsTab /> },
+  { value: "facebook",      label: "Facebook",         icon: Share2,   content: <FacebookTab /> },
 ];
 
 export default function SettingsPage() {
