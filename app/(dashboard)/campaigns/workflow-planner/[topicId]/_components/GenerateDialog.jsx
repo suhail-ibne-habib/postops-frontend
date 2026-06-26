@@ -13,21 +13,61 @@ export function GenerateDialog({ open, onOpenChange, type, topicId, onGenerateSu
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const [statusMessage, setStatusMessage] = useState("");
+
   async function handleGenerate() {
     setLoading(true);
     setError(null);
+    setStatusMessage(`Crafting the perfect ${type.toLowerCase()} copy...`);
+    
     try {
+      // 1. Trigger post content generation (returns quickly)
       const res = await apiFetch(
         `/campaigns/${topicId}/content`,
         { method: "POST" },
         getToken
       );
-      const posts = res.data || [];
+      let posts = res.data || [];
+
+      // 2. Poll the GET content endpoint until images are ready
+      setStatusMessage("Generating high-quality studio images...");
+      
+      const maxPolls = 15; // 30 seconds max timeout
+      let pollCount = 0;
+      let imagesReady = false;
+
+      while (pollCount < maxPolls && !imagesReady) {
+        // Wait 2 seconds between polls
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        pollCount++;
+
+        try {
+          const pollRes = await apiFetch(
+            `/campaigns/${topicId}/content`,
+            { method: "GET" },
+            getToken
+          );
+          const currentPosts = pollRes.data || [];
+          
+          if (currentPosts.length > 0) {
+            // Check if all posts have an imageUrl
+            const allHaveImages = currentPosts.every(p => p.imageUrl);
+            if (allHaveImages) {
+              posts = currentPosts;
+              imagesReady = true;
+            }
+          }
+        } catch (pollErr) {
+          console.error("Polling error:", pollErr);
+        }
+      }
+
       onGenerateSuccess(posts);
     } catch (err) {
       setError(err.message || "Generation failed. Please try again.");
     } finally {
       setLoading(false);
+      setStatusMessage("");
     }
   }
 
@@ -47,7 +87,7 @@ export function GenerateDialog({ open, onOpenChange, type, topicId, onGenerateSu
         <div className="py-6 flex flex-col items-center justify-center text-center">
           {loading ? (
             <div className="w-full pb-4">
-              <CookingAnimation message={`Crafting the perfect ${type.toLowerCase()} and generating high-quality studio images...`} />
+              <CookingAnimation message={statusMessage || `Crafting the perfect ${type.toLowerCase()}...`} />
             </div>
           ) : (
             <div className="space-y-4 w-full">
